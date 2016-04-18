@@ -1,0 +1,9 @@
+~~outline
+
+*parse user input into array of strings (each string = 1 argument, with argarry[0] being the program name)
+
+*if command isn't quit, fork process and run using execve(argarry[0],argarry)
+
+*have parent process either wait for process to terminate, or if it's a background process just let it run in background (still need to look into background processes a little more)
+
+*reap all child processes just before ending program (he's got a slide of this in ch8_signals.ppt, and it seems pretty straightforward, you just call wait on all the processes essentially)
