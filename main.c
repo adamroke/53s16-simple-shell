@@ -6,13 +6,13 @@
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 
 //struct used for the informaation found in each command call
 struct Command {    //but why? you only need the one double array, since command name is supposed to go IN the argument array
     char command_name[80];
-    char args[40][80];
-    int arg_count;
-};
+    char *args[40];	//DO NOT CHANGE THIS DATATYPE, THE ARRAY OF STRINGS MUST BE DYNAMICALLY ALLOCATED
+    int arg_count;	//args must end with NULL, and you can NULL a pointer, but can't NULL an array
 typedef struct Command Command;
 
 int parseInput(Command *input, char *init_input); //takes a line of input, parses, and returns status (1 if ok, -1 if error)
@@ -28,7 +28,10 @@ int main(int argc, char *argv[])
     char *init_input;
     init_input = malloc(sizeof(char) * 80);
     Command input;
-
+    int i;
+    for(i = 0; i < 40; i++){
+        input.args[i] = malloc(sizeof(char)*80);
+    }
     int exitcheck = 1;
     while(exitcheck != 0) {
         //Main program loop,
@@ -84,12 +87,15 @@ int parseInput(Command *input, char *init_input){   //hacked your code a bit, ar
         input->args[count-1][background] == '\0';
         return 1;
     }
+	input->args[count] = NULL; //so you need to have the last argument as NULL otherwise it won't run
     printf("\n");
 
     return 0;
 }
 
 int runCommand(int isBackground, Command *input) {
+    int pid;
+    extern int numThreads;
     if( strcasecmp(input->command_name, "quit") == 0) {
         //printf("Exiting...\n");
         return -1;
@@ -97,9 +103,22 @@ int runCommand(int isBackground, Command *input) {
     else{
         if(isBackground == 1){
             //run in background
+            printf("background task! only it's not implemented lol\n");
         }
-        else{
-            //run then wait
+        else{   //foreground task, program waits for process to end
+            pid = fork();
+            if(pid == 0){
+                execve(input->args[0],input->args);
+                //printf("%s\n",strerror(errno));
+                printf("oh shit, command not recognized\n");
+                exit(0);
+            }
+            else{
+                wait(pid);
+                numThreads++;
+                printf("main thread here!\n");
+            }
+
         }
     }
     //
