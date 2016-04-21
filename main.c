@@ -12,7 +12,8 @@
 struct Command {    //but why? you only need the one double array, since command name is supposed to go IN the argument array
     char command_name[80];
     char *args[40];	//DO NOT CHANGE THIS DATATYPE, THE ARRAY OF STRINGS MUST BE DYNAMICALLY ALLOCATED
-    int arg_count;	//args must end with NULL, and you can NULL a pointer, but can't NULL an array
+    int arg_count;	//args must end with NULL, and you can't NULL an array
+};
 typedef struct Command Command;
 
 int parseInput(Command *input, char *init_input); //takes a line of input, parses, and returns status (1 if ok, -1 if error)
@@ -25,20 +26,24 @@ int main(int argc, char *argv[])
 {
 
     int parseStatus, runStatus;
-    char *init_input;
-    init_input = malloc(sizeof(char) * 80);
+    //char *init_input;
+    //init_input = malloc(sizeof(char) * 80);
     Command input;
     int i;
-    for(i = 0; i < 40; i++){
-        input.args[i] = malloc(sizeof(char)*80);
-    }
+    //for(i = 0; i < 40; i++){
+      //  input.args[i] = malloc(sizeof(char)*80);
+    //}
     int exitcheck = 1;
     while(exitcheck != 0) {
-        //Main program loop,
+	char *init_input;
+	init_input = malloc(sizeof(char)*80);
+	for(i=0; i<40;i++){
+		input.args[i] = malloc(sizeof(char)*80);
+	}
+	  //Main program loop,
         printf(">");
         fgets(init_input, 80, stdin);  //obtains 1 line of input
         parseStatus = parseInput(&input, init_input); //input is parsed, with the return status placed in isBackground
-
         if(parseStatus == 1 || parseStatus == 0){ //if not error state
             runStatus = runCommand(parseStatus, &input); //run the command and put run status into runStatus
 
@@ -50,8 +55,13 @@ int main(int argc, char *argv[])
         else if(parseStatus < 0){
             printf("Error grabbing input. Retry.\n");
         }
+	free(init_input);
+	for(i=0; i<40; i++){
+		if(input.args[i] == NULL) continue;
+		else free(input.args[i]);//allocate and free them WITHIN the loop, so that assigning a null pointer isn't annoying to deal with
+	}
     }
-    free(init_input);
+    //free(init_input);
     //FREE THE COMMAND STRUCT
 
     return 0;
@@ -87,6 +97,7 @@ int parseInput(Command *input, char *init_input){   //hacked your code a bit, ar
         input->args[count-1][background] == '\0';
         return 1;
     }
+	free(input->args[count]);
 	input->args[count] = NULL; //so you need to have the last argument as NULL otherwise it won't run
     printf("\n");
 
@@ -105,18 +116,21 @@ int runCommand(int isBackground, Command *input) {
             //run in background
             printf("background task! only it's not implemented lol\n");
         }
-        else{   //foreground task, program waits for process to end
+        else{
+            //run then wait
+            printf("lol what\n");
             pid = fork();
             if(pid == 0){
-                execve(input->args[0],input->args);
-                //printf("%s\n",strerror(errno));
-                printf("oh shit, command not recognized\n");
+		printf("running program %s\n",input->args[0]);
+        execve(input->args[0],input->args);
+        printf("%s\n",strerror(errno));
                 exit(0);
-            }
-            else{
-                wait(pid);
-                numThreads++;
-                printf("main thread here!\n");
+        }
+        else{
+            system("ps");
+            wait(pid);
+            numThreads++;   //TODO: work out if this needs to be here, pretty certain threads kill properly when you wait for them
+            printf("main thread here!\n");
             }
 
         }
