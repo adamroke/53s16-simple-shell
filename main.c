@@ -66,6 +66,10 @@ int main(int argc, char *argv[])
     }
     //free(init_input);
     //FREE THE COMMAND STRUCT
+    for(i=0; i<40; i++){
+             if(input.args[i] == NULL) continue;
+             else free(input.args[i]);
+    }
 
     return 0;
 }
