@@ -146,7 +146,8 @@ int runCommand(int isBackground, Command *input) {
             }
             else{
             	//system("ps");
-            	wait(pid);
+            	waitpid(pid);
+		//system("ps");
             	printf("main thread here!\n");
             }
 
