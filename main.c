@@ -112,7 +112,8 @@ int parseInput(Command *input, char *init_input){   //hacked your code a bit, ar
 }
 
 int runCommand(int isBackground, Command *input) {
-    int pid;
+    pid_t pid;
+    int pidstatus;
     extern int numThreads;
     extern pid_t pidlist[];
     if( strcasecmp(input->command_name, "quit") == 0) {
@@ -145,8 +146,9 @@ int runCommand(int isBackground, Command *input) {
                 exit(0);
             }
             else{
-            	//system("ps");
-            	waitpid(pid);
+            	printf("pid=%d\n",pid);
+		//system("ps");
+            	waitpid(pid,&pidstatus,0);
 		//system("ps");
             	printf("main thread here!\n");
             }
@@ -163,7 +165,7 @@ void cleanup(){
 	extern int numThreads;
 	extern pid_t pidlist[];
 	int i,childstatus;
-	//system("ps");
+	system("ps");
 	for(i=0; i<numThreads;i++){  //kills any background processes still running
 		kill(pidlist[i],SIGINT);
 	}
