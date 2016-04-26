@@ -103,7 +103,12 @@ int parseInput(Command *input, char *init_input){   //hacked your code a bit, ar
 	input->args[count] = NULL; //so you need to have the last argument as NULL otherwise it won't run
     background = strcspn(input->args[count-1],"&");
     if(input->args[count-1][background] == '&'){
-        input->args[count-1][background] = '\0';
+	if(background == 0){
+		free(input->args[count-1]);
+		input->args[count-1] = NULL;
+	}
+        //else input->args[count-1][background] = '\0';
+        else memmove(input->args[count-1]+background, input->args[count-1]+strcspn(input->args[count-1],"\0"),1);
         return 1;
     }
     printf("\n");
