@@ -1,7 +1,7 @@
 //Andrew Light (11712029)
 //Adam Roke (48266987)
 //Lab 2 - shell
-//Last Modified: 4/28/2016
+//Last Modified: 4/29/2016
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <signal.h>
+#include <sys/stat.h>
 
 //struct used for the information found in each command call
 struct Command {
@@ -129,10 +130,14 @@ int runCommand(int isBackground, Command *input) {
         return -1;
     }
     else {
-        if(isBackground == 1) {
+        struct stat buffer;
+        if(stat(input->command_name, &buffer) != 0) {
+            printf("%s: Command not found.\n", input->command_name);
+        }
+        else if(isBackground == 1) {
             //run in background
-            printf("change this message text!\n");
-            printf("~~background entered, with command |%s|\n",input->args[0]);
+            //printf("change this message text!\n");
+            //printf("~~background entered, with command |%s|\n",input->args[0]);
             pid = fork();
     		if(pid == 0) {
     			execve(input->args[0],input->args);
