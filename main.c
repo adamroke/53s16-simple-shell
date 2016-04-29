@@ -1,4 +1,4 @@
-//Andrew Light
+//Andrew Light (11712029)
 //Adam Roke (48266987)
 //Lab 2 - shell
 //Last Modified: 4/28/2016
@@ -10,7 +10,7 @@
 #include <errno.h>
 #include <signal.h>
 
-//struct used for the informaation found in each command call
+//struct used for the information found in each command call
 struct Command {
     char command_name[80];
     char *args[40];
