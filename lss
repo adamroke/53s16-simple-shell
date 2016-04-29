@@ -1,0 +1,70 @@
+#!/bin/bash
+
+args=""
+space=" "
+files=""
+dotcase=""
+
+#now iterate through arguments given
+for arg in "$@"
+do
+	if [[ $arg == -* ]]; then #if it starts with a "-"
+		if [ $arg == "-s" ]; then #catching each unsupported arg. ugly but was having issues with &&
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-i" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-f" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-g" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-G" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-R" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-r" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-x" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-t" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-u" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		elif [ $arg == "-v" ]; then
+			echo "Error. ${arg} not supported."
+			exit
+		else
+			args=${args}${arg}${space} #else concatenate to args list
+		fi
+		
+		if [ $arg == "-a" ] #special case for -a arg
+		then
+			dotcase="!"
+			
+		fi
+	else
+		files=${files}${arg}${space} #else its a file, add to files list
+	fi
+done
+
+if [[ -z $files ]] #if files empty, search entire current directory
+then
+	files="*"
+fi
+
+if [[ -n $dotcase ]] #handle the -a option
+then
+	#echo "`ls -l -a ${args} | sed -n 2,3p`"
+	echo "`ls -l -d ${args} -S ${files} .*`"
+else
+	echo "`ls -l -d ${args} -S ${files}`" #sort ls -l with given args and file(s)
+fi
